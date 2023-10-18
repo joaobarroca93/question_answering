@@ -59,11 +59,7 @@ if question:
 
     # Weight scores by relevance
     weighted_answers = [
-        {
-            "answer": answer.content,
-            "final_score": answer.score * answer.context.relevance
-        }
-        for answer in answers
+        {"answer": answer.content, "final_score": answer.score * answer.context.relevance} for answer in answers
     ]
 
     st.write("Question: ", question)

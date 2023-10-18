@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "deus-use-case"
+name = "question_answering"
 version = "0.1.0"
 description = ""
 authors = ["Joao Barroca"]
@@ -21,6 +21,9 @@ watchdog = "^3.0.0"
 black = "^23.9.1"
 ruff = "^0.0.291"
 mypy = "^1.5.1"
+ipywidgets = "^8.1.1"
+datasets = "^2.14.5"
+huggingface-hub = "^0.18.0"
 
 
 [build-system]

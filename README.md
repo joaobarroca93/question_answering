@@ -9,9 +9,6 @@ In order to run the Streamlit APP, please use the `entrypoint.ipynb` notebook (a
 1. [Main Components](#main)
     1. a [Indexing](#indexing)
     1. b [Extractive QA](#qa)
-2. [Notebooks](#notebooks)
-3. [Retrieval Results](#results)
-4. [Future Improvements](#future)
 
 
 <a name="main"></a>
@@ -224,39 +221,3 @@ Answers:  [('27 May 1992', 0.2723108695059864), ('1992–', 0.2514834761534068),
               'relevance': 0.584426760673523},
   'score': 0.4659452438354492}]
 ```
-
-<a name="notebooks"></a>
-## Notebooks
-Under the `notebooks` folder we have several notebooks that were used during the development of the project.
-- `eda.ipynb` - a notebook for exploratory data analysis
-- `data_preprocessing.ipynb` - a notebook to preprocesse the data and generate all the relevant data files
-- `metrics.ipynb` - a notebook to implement and test the ranking metrics
-- `tf_idf_encoder.ipynb` - a notebook for training a tf-idf model
-- `sentencer_transformers_encoder.ipynb` - a notebook for fune-tuning senntence transformer models
-- `retrieval_eval.ipynb` - a notebook to evaluate all the retrievers that were developed
-- `extractive_qa.ipynb` - a notebook used to run extractive QA
-
-<a name="results"></a>
-## Retrieval Results
-
-Retriever | Encoder | mAP@6 | MRR@6 | NDCG@6
---- | --- | --- | --- | --- |
-Random | - | 0.00025 | 0.00025 | 0.00038 |
-Vector Search | Random | 0.00064 | 0.00064 | 0.00078 |
-Vector Search | TF-IDF | 0.201 | 0.201 | 0.227 |
-Vector Search | [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) | 0.676 | 0.676 | 0.71 |
-Vector Search | [all-mpnet-base-v2](https://huggingface.co/sentence-transformers/all-mpnet-base-v2) | 0.723 | 0.723 | 0.757 |
-Vector Search | [multi-qa-mpnet-base-cos-v1](https://huggingface.co/sentence-transformers/multi-qa-mpnet-base-cos-v1)  | 0.729 | 0.729 | 0.759 |
-Vector Search | all-mpnet-base-v2-deus (fine-tuned from [all-mpnet-base-v2](https://huggingface.co/sentence-transformers/all-mpnet-base-v2)) | **0.731** | **0.731** | **0.764** |
-Vector Search | mpnet-base-deus (fine-tuned from [mpnet-base](https://huggingface.co/microsoft/mpnet-base)) | 0.564 | 0.564 | 0.602 |
-
-<a name="future"></a>
-## Future Improvements
-- ONNX runtime for faster encoding
-- Abstractive QA (Generator using OpenAI ChatGPT)
-    - The Reader can be leveraged as a plug-in (https://arxiv.org/abs/2305.08848)
-- Hybrid retrieval
-    - Keyword matching on query tokens
-    - Filtering by entities found in the query (NER model and documents metadata)
-- Train a model to predict score of answer based on all contexts and their relevances
-    - Instead of multiplying the answer score with the relevance, we can train a model to infer this (by using a QA dataset, for example)

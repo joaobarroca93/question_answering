@@ -10,10 +10,9 @@ from src.pipelines import ExtractiveQAPipeline
 
 
 MAIN_PATH = Path.cwd().resolve().absolute()
-MODELS_PATH = MAIN_PATH / "models"
 DB_PATH = MAIN_PATH / "data/chroma_db"
-COLLECTION_NAME = "documents-all-mpnet-base-deus"
-ENCODER_MODEL_FILEPATH = MODELS_PATH / "encoders/sentence-transformers/all-mpnet-base-v2-deus"
+COLLECTION_NAME = "documents-squad-v2"
+ENCODER_MODEL_FILEPATH = "sentence-transformers/all-mpnet-base-v2"
 READER_MODEL_FILEPATH = "deepset/roberta-base-squad2"
 
 

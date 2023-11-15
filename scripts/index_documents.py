@@ -1,23 +1,24 @@
 from pathlib import Path
 
-from src.repositories import CsvDocumentsRepository
+from src.data.datasets.squad_v2 import SquadV2DatasetBuilder
+from src.repositories import DatasetDocumentsRepository
 from src.clients import ChromaDatabaseClient
 from src.encoders import SentenceTransformersEncoder
 from src.indexer import DatabaseIndexer
 
 
 MAIN_PATH = Path.cwd().resolve().absolute()
-DATA_PATH = MAIN_PATH / "data"
-MODELS_PATH = MAIN_PATH / "models"
-DOCUMENTS_FILEPATH = DATA_PATH / "documents.csv"
-ENCODER_MODEL_FILEPATH = MODELS_PATH / "encoders/sentence-transformers/all-mpnet-base-v2-deus"
+ENCODER_MODEL_FILEPATH = "sentence-transformers/all-mpnet-base-v2"
 DOCUMENT_ID_COLUMN = "document_id"
-DOCUMENT_CONTENT_COLUMN = "document_content"
+DOCUMENT_CONTENT_COLUMN = "document"
 PERSIST_PATH = MAIN_PATH / "data/chroma_db"
-COLLECTION_NAME = "documents-all-mpnet-base-deus"
+COLLECTION_NAME = "documents-squad-v2"
 
-documents_repository = CsvDocumentsRepository(
-    path=DOCUMENTS_FILEPATH,
+# We will index all document in the Squad V2 dataset
+dataset_builder = SquadV2DatasetBuilder()
+
+documents_repository = DatasetDocumentsRepository(
+    dataset=dataset_builder.make_encoder_dataset(),
     document_id_column=DOCUMENT_ID_COLUMN,
     document_content_column=DOCUMENT_CONTENT_COLUMN,
 )

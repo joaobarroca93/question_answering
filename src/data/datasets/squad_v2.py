@@ -27,7 +27,7 @@ class SquadV2DatasetBuilder(BaseDatasetBuilder, HuggingFaceDatasetMixIn):
         return self.raw_dataset["validation"]
 
     @staticmethod
-    def _generate_ids(example: Dict[str, str]) -> Dict[str, str]:
+    def _generate_ids(example: Dict[str, str], columns: List[str]) -> Dict[str, str]:
         return {
             FeatureNames.QUERY_ID.value: hash_text(example[FeatureNames.QUERY.value]),
             FeatureNames.DOCUMENT_ID.value: hash_text(example[FeatureNames.DOCUMENT.value]),
@@ -52,6 +52,11 @@ class SquadV2DatasetBuilder(BaseDatasetBuilder, HuggingFaceDatasetMixIn):
                 columns_to_remove=columns_to_remove,
             )
         return dataset_dict.map(self._generate_ids)
+
+    def make_documents_dataset(self) -> DatasetDict:
+        # TODO: Implement a documents dataset that only contains
+        #  `document`` and `document_id``
+        return self.make_encoder_dataset()
 
     @property
     def raw_dataset(self) -> DatasetDict:

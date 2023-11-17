@@ -5,7 +5,7 @@ from typing import List
 
 from datasets import DatasetDict
 
-from src.entities.document import Document
+from src.entities import Document
 
 from .base import BaseRepository
 

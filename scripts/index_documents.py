@@ -16,9 +16,10 @@ COLLECTION_NAME = "documents-squad-v2"
 
 # We will index all document in the Squad V2 dataset
 dataset_builder = SquadV2DatasetBuilder()
+documents_dataset = dataset_builder.make_documents_dataset()
 
 documents_repository = DatasetDocumentsRepository(
-    dataset=dataset_builder.make_encoder_dataset(),
+    dataset=documents_dataset,
     document_id_column=DOCUMENT_ID_COLUMN,
     document_content_column=DOCUMENT_CONTENT_COLUMN,
 )

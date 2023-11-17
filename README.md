@@ -1,8 +1,11 @@
 # Extractive Open-Domain Question-Answering (Extractive ODQA)
 
-In this project I implemented an Extractive Open-Domain Question-Answering system. Given a question, the system (1) first retrieves a top K contexts related to the questions, and, after that, it (2) applies extractive QA on each of the contexts, generating a list of possible answers to the question, ranked by a score.
+This project implements an Extractive Open-Domain Question-Answering system. Given a question, the system (1) first retrieves a top K contexts related to the questions, and, after that, it (2) applies extractive QA on each of the contexts, generating a list of possible answers to the question, ranked by a score.
 
-In order to run the Streamlit APP, please use the `entrypoint.ipynb` notebook (and follow the instructions defined in there).
+You can run the Streamlit App for a quick demo:
+```
+streamlit run app.py
+```
 
 ## Table of Contents
 
@@ -15,7 +18,7 @@ In order to run the Streamlit APP, please use the `entrypoint.ipynb` notebook (a
 ## Main Components
 The system is composed of many interlinked components. Before running the Extractive QA, we first need to index some documents that will be used during retrieval.
 
-NOTE: in the project I am currently using the documents in `data/documents.csv` which correspond to the unique documents found in the original dataset (`data/ds_nlp_challenge.csv`).
+NOTE: Currently, we are indexing the documents that compose the [Squad V2 dataset](https://huggingface.co/datasets/squad_v2).
 
 The most important components are:
 - Repositories - used to load/extract relevant data
@@ -63,27 +66,30 @@ python scripts/index_documents.py
 
 Code example for indexing documents into a Chroma DB:
 ```python
-from src.repositories import CsvDocumentsRepository
+from src.entities import Document
+from src.indexer import DatabaseIndexer
 from src.clients import ChromaDatabaseClient
 from src.encoders import SentenceTransformersEncoder
-from src.indexer import DatabaseIndexer
 
-documents_repository = CsvDocumentsRepository(
-    path="path_to_repo/data/documents.csv",  # path to the documents CSV file
-    document_id_column="document_id",  # name of the column that has the document Ids
-    document_content_column="document_content",  # name of the column that contains the actual document content
-)
+
 encoder = SentenceTransformersEncoder(
-    model_filepath="path_to_repo/models/encoders/sentence-transformers/all-mpnet-base-deus"
+    model_filepath="sentence-transformers/all-mpnet-base-v2"
 )
 client = ChromaDatabaseClient(
-    collection_name="documents-all-mpnet-base-deus",  # name of the collection (we will use a all-mpnet-base-deus encoder to get document vectors)
+    collection_name="<name_to_the_documents_collection>",
     persist=True,
-    persist_path="path_to_repo/data/chroma_db"  # path where db will be persisted
+    persist_path="<path_to_persist_the_chromadb>",
 )
 indexer = DatabaseIndexer(client=client, encoder=encoder)
 
-docs = documents_repository.get_all()
+# Use the Document class to instantiate the documents to index
+docs = [
+    Document(
+        id="1",
+        content="document_content",
+        length=len("document_content"),
+    )
+]
 indexer.index(documents=docs)
 ```
 
@@ -91,7 +97,7 @@ indexer.index(documents=docs)
 ### Extractive QA
 We can launch the Extractive QA App:
 ```
-streamlit run scripts/extractive_qa_streamlit.py
+streamlit run app.py
 ```
 
 Code example for running Extractive QA:
@@ -103,18 +109,18 @@ from src.readers import Reader
 from src.pipelines import ExtractiveQAPipeline
 
 encoder = SentenceTransformersEncoder(
-    model_filepath="path_to_repo/models/encoders/sentence-transformers/all-mpnet-base-deus"
+    model_filepath="sentence-transformers/all-mpnet-base-v2"
 )
 client = ChromaDatabaseClient(
-    collection_name="documents-all-mpnet-base-deus",  # name of the collection (we will use a all-mpnet-base-deus encoder to get document vectors)
+    collection_name="<name_to_the_documents_collection>",
     persist=True,
-    persist_path="path_to_repo/data/chroma_db"  # path where db will be persisted
+    persist_path="<path_to_persist_the_chromadb>",
 )
 retriever = VectorSearchRetriever(client=client, encoder=encoder)
-reader = Reader(model_filepath="deepset/roberta-base-squad2")  # I am using the pre-trained "deepset/roberta-base-squad2" model
+reader = Reader(model_filepath="deepset/roberta-base-squad2")
 
 top_k = 3  # retrieve top 3 contexts
-question = "you question"
+question = "your question"
 contexts = retriever.retrieve(query=question, k=top_k)
 answers = reader.extract(
     question=question,
@@ -133,7 +139,7 @@ answers = extractive_qa.run(
     include_contexts=True
 )
 
-# Weight scores by relevance to get the final scores
+# Weight scores by relevance of its context to get the final scores
 weighted_answers = [(answer.content, answer.score*answer.context.relevance) for answer in answers]
 
 print("Question: ", question)
@@ -142,6 +148,7 @@ print()
 pprint([answer.as_dict() for answer in answers])
 ```
 
+Example for the question `When was the Premier League created?`:
 ```
 Question:  When was the Premier League created?
 Answers:  [('27 May 1992', 0.2723108695059864), ('1992–', 0.2514834761534068), ('1888', 0.09275213617686084)]

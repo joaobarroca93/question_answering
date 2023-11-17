@@ -25,6 +25,10 @@ class BaseDatasetBuilder(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def make_documents_dataset(self) -> DatasetDict:
+        raise NotImplementedError
+
+    @abstractmethod
     def get_dataset_names(self) -> List[str]:
         raise NotImplementedError
 

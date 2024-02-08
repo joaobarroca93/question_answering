@@ -27,7 +27,7 @@ class SquadV2DatasetBuilder(BaseDatasetBuilder, HuggingFaceDatasetMixIn):
         return self.raw_dataset["validation"]
 
     @staticmethod
-    def _generate_ids(example: Dict[str, str], columns: List[str]) -> Dict[str, str]:
+    def _generate_ids(example: Dict[str, str]) -> Dict[str, str]:
         return {
             FeatureNames.QUERY_ID.value: hash_text(example[FeatureNames.QUERY.value]),
             FeatureNames.DOCUMENT_ID.value: hash_text(example[FeatureNames.DOCUMENT.value]),

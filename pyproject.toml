@@ -9,7 +9,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python =  ">=3.9,<3.11,!=3.9.7"
+python = ">=3.9,<3.13"
 pandas = "^2.1.1"
 nltk = "^3.8.1"
 pyldavis = "^3.4.1"
@@ -18,12 +18,16 @@ chromadb = "^0.4.13"
 sentence-transformers = "^2.2.2"
 streamlit = "^1.27.1"
 watchdog = "^3.0.0"
-black = "^23.9.1"
-ruff = "^0.0.291"
-mypy = "^1.5.1"
 ipywidgets = "^8.1.1"
 datasets = "^2.14.5"
 huggingface-hub = "^0.18.0"
+transformers = "^4.35.2"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.0.0"
+ruff = "^0.3.0"
+mypy = "^1.5.1"
+pytest = "^8.0.0"
 
 
 [build-system]
@@ -37,9 +41,15 @@ disable_error_code = ["type-abstract", "override"]
 
 [tool.ruff]
 line-length = 120
-ignore-init-module-imports = true
-[tool.ruff.per-file-ignores]
+
+[tool.ruff.lint]
+ignore = []
+
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 
 [tool.black]
 line-length = 120
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

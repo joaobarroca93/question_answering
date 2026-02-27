@@ -6,12 +6,12 @@ from nltk.stem import PorterStemmer
 
 from .base import BaseTextProcessor
 
-nltk.download("punkt")
-nltk.download("stopwords")
-
 
 class TextProcessor(BaseTextProcessor):
     def __init__(self):
+        nltk.download("punkt", quiet=True)
+        nltk.download("punkt_tab", quiet=True)
+        nltk.download("stopwords", quiet=True)
         self.tokenizer = RegexpTokenizer(r"\w+")
         self.ps = PorterStemmer()
         self.stopwords = stopwords.words("english")

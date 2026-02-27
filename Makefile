@@ -15,4 +15,7 @@ check-formatting:
 check-typing:
 	poetry run mypy src/
 
-check: check-formatting check-typing
+test:
+	poetry run pytest
+
+check: check-formatting check-typing test

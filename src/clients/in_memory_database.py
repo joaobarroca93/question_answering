@@ -14,12 +14,12 @@ class InMemoryDatabaseClient(BaseDatabaseClient):
 
     def add_document(self, document: Document) -> None:
         if document.id in self.documents.keys():
-            raise ValueError("There is already a document with id `{document.id}`.")
+            raise ValueError(f"There is already a document with id `{document.id}`.")
         self.documents[document.id] = document
 
     def remove_document(self, document_id: str) -> None:
         if document_id not in self.documents.keys():
-            raise ValueError("There is not any document with the provided id.")
+            raise ValueError(f"There is not any document with id `{document_id}`.")
         self.documents.pop(document_id)
 
     def get_document(self, document_id: str) -> Optional[Document]:

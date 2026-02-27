@@ -54,9 +54,13 @@ class SquadV2DatasetBuilder(BaseDatasetBuilder, HuggingFaceDatasetMixIn):
         return dataset_dict.map(self._generate_ids)
 
     def make_documents_dataset(self) -> DatasetDict:
-        # TODO: Implement a documents dataset that only contains
-        #  `document`` and `document_id``
-        return self.make_encoder_dataset()
+        encoder_dataset = self.make_encoder_dataset()
+        columns_to_keep = {FeatureNames.DOCUMENT.value, FeatureNames.DOCUMENT_ID.value}
+        dataset_dict = DatasetDict()
+        for split, dataset in encoder_dataset.items():
+            columns_to_remove = [col for col in dataset.column_names if col not in columns_to_keep]
+            dataset_dict[split] = dataset.remove_columns(columns_to_remove)
+        return dataset_dict
 
     @property
     def raw_dataset(self) -> DatasetDict:

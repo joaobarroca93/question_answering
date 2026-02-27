@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List, cast
 from transformers import pipeline
 
 from src.entities import Answer, RetrievalResult
@@ -18,11 +18,11 @@ class Reader(BaseReader):
     ) -> List[Answer]:
         answers = []
         for context in contexts:
-            answer = self.qa_model(question=question, context=context.document.content)  # type: ignore
+            raw = cast(Dict[str, object], self.qa_model(question=question, context=context.document.content))
             answers.append(
                 Answer(
-                    content=answer["answer"],
-                    score=answer["score"],
+                    content=cast(str, raw["answer"]),
+                    score=cast(float, raw["score"]),
                     context=context if include_contexts else None,
                 )
             )

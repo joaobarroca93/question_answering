@@ -1,7 +1,7 @@
 import chromadb
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple, cast
 
-from src.entities.document import Document, METADATA
+from src.entities.document import Document, METADATA, VECTOR
 
 from .base import BaseVectorDatabaseClient
 
@@ -31,7 +31,7 @@ class ChromaDatabaseClient(BaseVectorDatabaseClient):
         metadatas = [document.metadata] if document.metadata else None
         self.collection.add(
             documents=[document.content],
-            embeddings=[document.vector],  # type: ignore
+            embeddings=[cast(VECTOR, document.vector)],
             metadatas=metadatas,
             ids=[document.id],
         )
@@ -48,13 +48,12 @@ class ChromaDatabaseClient(BaseVectorDatabaseClient):
             if document.metadata:
                 metadatas.append(document.metadata)
 
-        if len(metadatas) != len(docs):
-            metadatas = None  # type: ignore
+        chroma_metadatas = metadatas if len(metadatas) == len(docs) else None
 
         self.collection.add(
             documents=docs,
-            embeddings=embeddings,  # type: ignore
-            metadatas=metadatas,
+            embeddings=cast(List[VECTOR], embeddings),
+            metadatas=chroma_metadatas,
             ids=ids,
         )
 
@@ -88,17 +87,17 @@ class ChromaDatabaseClient(BaseVectorDatabaseClient):
         metadata: Optional[METADATA] = None,
     ) -> List[Tuple[List[Document], List[float]]]:
         results = self.collection.query(
-            query_embeddings=query_vectors,  # type: ignore
+            query_embeddings=cast(List[VECTOR], query_vectors),
             n_results=k,
-            where=metadata,  # type: ignore
+            where=dict(metadata) if metadata else None,
             include=["embeddings", "documents", "metadatas", "distances"],
         )
         iterator = zip(
             results["ids"],
-            results["documents"],  # type: ignore
-            results["metadatas"],  # type: ignore
-            results["embeddings"],  # type: ignore
-            results["distances"],  # type: ignore
+            cast(List[List[str]], results["documents"]),
+            cast(List[List[METADATA]], results["metadatas"]),
+            cast(List[List[VECTOR]], results["embeddings"]),
+            cast(List[List[float]], results["distances"]),
         )
         batch_results = []
         for ids, contents, metadatas, vectors, distances in iterator:

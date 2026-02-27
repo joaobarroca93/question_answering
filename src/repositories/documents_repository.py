@@ -1,4 +1,3 @@
-import itertools
 import pandas as pd
 
 from typing import List
@@ -47,15 +46,20 @@ class DatasetDocumentsRepository(BaseRepository):
         self.document_content_column = document_content_column
 
     def get_all(self) -> List[Document]:
-        unique_doc_ids = self.dataset.unique(self.document_id_column).values()
-        unique_doc_contents = self.dataset.unique(self.document_content_column).values()
-        doc_ids = list(itertools.chain.from_iterable(unique_doc_ids))
-        doc_contents = list(itertools.chain.from_iterable(unique_doc_contents))
-        return [
-            Document(
-                id=doc_id,
-                content=doc_content,
-                length=len(doc_content),
-            )
-            for doc_id, doc_content in zip(doc_ids, doc_contents)
-        ]
+        seen_ids: set = set()
+        documents: List[Document] = []
+        for split in self.dataset.values():
+            for row in split:
+                doc_id = row[self.document_id_column]
+                if doc_id in seen_ids:
+                    continue
+                seen_ids.add(doc_id)
+                content = row[self.document_content_column]
+                documents.append(
+                    Document(
+                        id=doc_id,
+                        content=content,
+                        length=len(content),
+                    )
+                )
+        return documents

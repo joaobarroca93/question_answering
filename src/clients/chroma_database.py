@@ -65,16 +65,20 @@ class ChromaDatabaseClient(BaseVectorDatabaseClient):
 
     def get_document(self, document_id: str) -> Optional[Document]:
         doc = self.collection.get(ids=[document_id], include=["embeddings", "documents", "metadatas"])
-        return (
-            Document(
-                id=doc["ids"][0],
-                content=doc["documents"][0] if doc["documents"] else "",
-                length=len(doc["documents"][0]) if doc["documents"] else 0,
-                vector=doc["embeddings"][0] if doc["embeddings"] else None,
-                metadata=doc["metadatas"][0] if doc["metadatas"] else None,
-            )
-            if doc["ids"]
-            else None
+        ids = doc["ids"]
+        documents = doc["documents"]
+        embeddings = doc["embeddings"]
+        metadatas = doc["metadatas"]
+        if not ids:
+            return None
+
+        content = documents[0] if documents is not None and len(documents) else ""
+        return Document(
+            id=ids[0],
+            content=content,
+            length=len(content),
+            vector=embeddings[0] if embeddings is not None and len(embeddings) else None,
+            metadata=metadatas[0] if metadatas is not None and len(metadatas) else None,
         )
 
     def get_all_documents(self) -> List[Document]:

@@ -1,5 +1,5 @@
 setup:
-	python -m pip install --upgrade pip wheel poetry==1.6.1
+	python -m pip install --upgrade pip wheel poetry==2.5.1
 
 install: setup
 	poetry install
